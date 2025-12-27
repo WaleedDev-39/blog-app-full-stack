@@ -27,13 +27,12 @@ router.get('/add-new', (req, res) => {
 router.get('/:id', async (req, res) => {
     const blog = await Blog.findById(req.params.id).populate('createdBy');
     const comments = await Comment.find({ blogId: req.params.id }).populate('createdBy');
-    console.log('comments', comments)
     return res.render('blog', {
         user: req.user,
         blog,
         comments,
-    })
-})
+    });
+});
 
 router.post('/comment/:blogId', async (req, res) => {
     await Comment.create({
@@ -46,13 +45,13 @@ router.post('/comment/:blogId', async (req, res) => {
 
 router.post('/', upload.single('coverImage'), async (req, res) => {
     const { title, body } = req.body;
-    await Blog.create({
+    const blog = await Blog.create({
         title,
         body,
         createdBy: req.user._id,
         coverImageURL: `/uploads/${req.file.filename}`,
     })
-    return res.redirect(`/blog/${Blog._id}`)
+    return res.redirect(`/blog/${blog._id}`)
 })
 
 module.exports = router;
